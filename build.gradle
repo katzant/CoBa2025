@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    antlr 'org.antlr:antlr4:4.13.2'
+    implementation 'org.antlr:antlr4:4.13.2'
+}
+
+generateGrammarSource {
+    arguments += ["-visitor", "-no-listener"]
+    outputDirectory = file("src/main/java")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+clean.doFirst {
+    delete fileTree("src/main/java") {
+        include "*Lexer.java"
+        include "*Parser.java"
+        include "*Visitor.java"
+        include "*BaseVisitor.java"
+        include "*.tokens"
+        include "*.interp"
+    }
+}
