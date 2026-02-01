@@ -29,8 +29,7 @@ procedure:  procedure_head
             END_SYMBOL
             SEMICOLON;
 
-statements: statement
-            (SEMICOLON statement)*
+statements: (statement (SEMICOLON statement)*)?
             (SEMICOLON)?;
 
 statement:  if_statement
@@ -50,7 +49,7 @@ writeln:    WRITELN_SYMBOL
                     RIGHT_PARENTHESIS;
 
 begin_end_block:    BEGIN_SYMBOL
-                    (statements)*
+                    statements
                     END_SYMBOL;
 
 if_statement: IF_SYMBOL
