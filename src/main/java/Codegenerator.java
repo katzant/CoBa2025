@@ -46,6 +46,61 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     }
 
     @Override
+    public String visitFunction(PascalParser.FunctionContext ctx) {
+        String functionName = ctx.function_head().IDENTIFIER().getText();
+
+        StringBuilder parameters = new StringBuilder();
+        if (ctx.function_head().parameter() != null) {
+            for (PascalParser.Param_tupleContext tuple : ctx.function_head().parameter().param_tuple()) {
+                for (int i = 0; i < tuple.IDENTIFIER().size(); i++) {
+                    if (tuple.data_type().getText().equals("integer")) {
+                        parameters.append("I");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.INT);
+                    } else if (tuple.data_type().getText().equals("double")) {
+                        parameters.append("D");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.DOUBLE);
+                    } else if (tuple.data_type().getText().equals("string")) {
+                        parameters.append("Ljava/lang/String;");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.STRING);
+                    } else {
+                        parameters.append("B");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.BOOLEAN);
+                    }
+                }
+            }
+        }
+
+        String returnType = visit(ctx.function_head().data_type());
+        String returnStatement;
+        if (returnType.equals("integer")) {
+            returnType = "I";
+            returnStatement = "ireturn";
+        } else if (returnType.equals("boolean")) {
+            returnType = "B";
+            returnStatement = "ireturn";
+        } else if (returnType.equals("string")) {
+            returnType = "Ljava/lang/String;";
+            returnStatement = "areturn";
+        } else {
+            returnType = "D";
+            returnStatement = "dreturn";
+        }
+
+        String varArea;
+        if (ctx.var_area() == null) {
+            varArea = "";
+        } else varArea = visit(ctx.var_area());
+
+        return ".method public static " + functionName + " (" + parameters +")" + returnType +"\n" +
+                ".limit stack 50\n" +
+                ".limit locals 50\n" +
+                varArea + "\n" +
+                visit(ctx.statements()) + "\n" +
+                returnStatement + "\n" +
+                ".end method\n";
+    }
+
+    @Override
     public String visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
         String component1 = visit(ctx.expression(1));
