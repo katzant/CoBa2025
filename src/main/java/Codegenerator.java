@@ -1,5 +1,19 @@
 public class Codegenerator extends PascalParserBaseVisitor<String> {
 
+    private ScopeCodegen scopeCodegen;
+    private String programName;
+
+    public Codegenerator(ScopeCodegen scopeCodegen) {
+        this.scopeCodegen = scopeCodegen;
+    }
+
+    @Override
+    public String visitProgram(PascalParser.ProgramContext ctx) {
+        programName = ctx.IDENTIFIER().getText();
+        return ".class public " + ctx.IDENTIFIER().getText() + "\n"
+                + ".super java/lang/Object";
+    }
+
     @Override
     public String visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
