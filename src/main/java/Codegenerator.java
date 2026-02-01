@@ -8,6 +8,37 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     }
 
     @Override
+    public String visitStart(PascalParser.StartContext ctx) {
+        StringBuilder functionsProcedures = new StringBuilder();
+        for (PascalParser.FunctionContext function : ctx.function()) {
+            functionsProcedures.append(visit(function));
+        }
+        for (PascalParser.ProcedureContext procedure : ctx.procedure()) {
+            functionsProcedures.append(visit(procedure));
+        }
+
+        String varArea;
+        if (ctx.var_area() == null) {
+            varArea = "";
+        } else varArea = visit(ctx.var_area());
+
+        return visit(ctx.program()) + "\n" +
+                varArea +
+                ".method public <init>()V\n" +
+                "aload_0\n" +
+                "invokenonvirtual java/lang/Object/<init>()V\n" +
+                "return\n" +
+                ".end method\n" +
+                functionsProcedures.toString() + "\n" +
+                ".method public static main([Ljava/lang/String;)V" +
+                ".limit stack 50\n" +
+                ".limit locals 50\n" +
+                visit(ctx.statements()) + "\n" +
+                "return\n" +
+                ".end method";
+    }
+
+    @Override
     public String visitProgram(PascalParser.ProgramContext ctx) {
         programName = ctx.IDENTIFIER().getText();
         return ".class public " + ctx.IDENTIFIER().getText() + "\n"
