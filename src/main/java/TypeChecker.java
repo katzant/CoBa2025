@@ -276,7 +276,6 @@ public class TypeChecker extends PascalParserBaseVisitor<Type> {
             Type functionType = parameters.get(i);
             Type calledType = visit(ctx.expression(i));
 
-
             if (!(functionType == calledType) && !(functionType == Type.DOUBLE && calledType == Type.INT)) {
                 System.out.println("Type Error: parameter with index " + i +
                          " used in function call "+ functionName + " does not match");
