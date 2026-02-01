@@ -30,7 +30,7 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                 "return\n" +
                 ".end method\n" +
                 functionsProcedures.toString() + "\n" +
-                ".method public static main([Ljava/lang/String;)V" +
+                ".method public static main([Ljava/lang/String;)V\n" +
                 ".limit stack 50\n" +
                 ".limit locals 50\n" +
                 visit(ctx.statements()) + "\n" +
