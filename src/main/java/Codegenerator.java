@@ -101,6 +101,52 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     }
 
     @Override
+    public String visitVar_area(PascalParser.Var_areaContext ctx) {
+        StringBuilder varDeclarations = new StringBuilder();
+        for (PascalParser.Var_declarationContext declaration : ctx.var_declaration()) {
+            varDeclarations.append(visit(declaration));
+        }
+
+        return varDeclarations.toString();
+    }
+
+    @Override
+    public String visitVar_declaration(PascalParser.Var_declarationContext ctx) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (scopeCodegen.getParent() == null) {
+            for (int i = 0; i < ctx.IDENTIFIER().size(); i++) {
+                if (ctx.data_type().INT_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.INT);
+                    stringBuilder.append(".field public static ").append(ctx.IDENTIFIER(i).getText()).append(" I\n");
+                } else if (ctx.data_type().DOUBLE_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.DOUBLE);
+                    stringBuilder.append(".field public static ").append(ctx.IDENTIFIER(i).getText()).append(" D\n");
+                } else if (ctx.data_type().BOOL_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.BOOLEAN);
+                    stringBuilder.append(".field public static ").append(ctx.IDENTIFIER(i).getText()).append(" B\n");
+                } else {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.STRING);
+                    stringBuilder.append(".field public static ").append(ctx.IDENTIFIER(i).getText()).append(" Ljava/lang/String;\n");
+                }
+            }
+        } else {
+            for (int i = 0; i < ctx.IDENTIFIER().size(); i++) {
+                if (ctx.data_type().INT_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.INT);
+                } else if (ctx.data_type().DOUBLE_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.DOUBLE);
+                } else if (ctx.data_type().BOOL_SYMBOL() != null) {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.BOOLEAN);
+                } else {
+                    scopeCodegen.addVariable(ctx.IDENTIFIER(i).getText(), Type.STRING);
+                }
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    @Override
     public String visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
         String component1 = visit(ctx.expression(1));
