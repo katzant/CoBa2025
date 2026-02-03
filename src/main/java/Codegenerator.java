@@ -207,4 +207,65 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         }
     }
 
+    @Override
+    public String visitMultExpression(PascalParser.MultExpressionContext ctx) {
+        String component0 = visit(ctx.expression(0));
+        Type type0 = this.firstExpressionType;
+
+        String component1 = visit(ctx.expression(1));
+        Type type1 = this.firstExpressionType;
+        if (ctx.MULT() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "dmul";
+                } else if (type0 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "dmul";
+                } else {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "dmul";
+                }
+            } else {
+                firstExpressionType = Type.INT;
+                return component0 + "\n" + component1 + "\n" + "imul";
+            }
+        } else if (ctx.DIV() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "ddiv";
+                } else if (type0 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "ddiv";
+                } else {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "ddiv";
+                }
+            } else {
+                firstExpressionType = Type.INT;
+                return component0 + "\n" + component1 + "\n" + "idiv";
+            }
+        } else if (ctx.MOD() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "drem";
+                } else if (type0 != Type.DOUBLE) {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "drem";
+                } else {
+                    firstExpressionType = Type.DOUBLE;
+                    return component0 + "\n" + component1 + "\n" + "drem";
+                }
+            } else {
+                firstExpressionType = Type.INT;
+                return component0 + "\n" + component1 + "\n" + "irem";
+            }
+        } else {
+            firstExpressionType = Type.BOOLEAN;
+            return component0 + "\n" + component1 + "\n" + "iand";
+        }
+    }
+
 }
