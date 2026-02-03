@@ -175,6 +175,30 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         }
     }
 
+//    @Override
+//    public String visitLiteral(PascalParser.LiteralContext ctx) {
+//        if (ctx.IDENTIFIER() != null) {
+//            String identifier = ctx.IDENTIFIER().getText();
+//            TypeCodegen litType = scopeCodegen.get(identifier);
+//            if (litType.isLocal()) {
+//                return "iload" + litType.getIndex();
+//            } else return "getstatic " + programName + "/" + identifier + "/" + litType.getType();
+//        } else if (ctx.INTCONST() != null) {
+//            return "bipush " + ctx.INTCONST().getText();
+//        } else if (ctx.DOUBLECONST() != null) {
+//            return "ldc2_w " + ctx.DOUBLECONST().getText();
+//        } else if (ctx.STRINGCONST() != null) {
+//            return "ldc " + ctx.STRINGCONST().getText();
+//        } else if (ctx.TRUE() != null) {
+//            return "bipush 1";
+//        } else return "bipush 0";
+//    }
+//
+//    @Override
+//    public String visitBoolExpression(PascalParser.BoolExpressionContext ctx) {
+//
+//    }
+
     @Override
     public String visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
@@ -193,7 +217,7 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         String component0 = visit(ctx.expression(0));
         String component1 = visit(ctx.expression(1));
         if (ctx.MULT() != null) {
-            return component0 + "\n" + component1 + "\n" + "imult";
+            return component0 + "\n" + component1 + "\n" + "imul";
         } else if (ctx.DIV() != null) {
             return component0 + "\n" + component1 + "\n" + "idiv";
         } else if (ctx.MOD() != null) {
@@ -203,4 +227,12 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         }
     }
 
+//    @Override String visitIf_statement(PascalParser.If_statementContext ctx) {
+//        String labelElse = visit(ctx.ELSE_SYMBOL());
+//        String labelEnd = ...
+//        String ifComponent0 = visit(ctx.expression());
+//        if (visit(ctx.ELSE_SYMBOL() != null)) {
+//            return
+//        }
+//    }
 }
