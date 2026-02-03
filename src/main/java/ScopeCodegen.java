@@ -34,4 +34,9 @@ public class ScopeCodegen {
     public ScopeCodegen getParent() {
         return parent;
     }
+
+    public int getIndex(String name) {
+        TypeCodegen typeCodegen = variables.get(name);
+        return typeCodegen.getIndex();
+    }
 }

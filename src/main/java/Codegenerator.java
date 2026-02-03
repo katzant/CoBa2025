@@ -147,6 +147,59 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     }
 
     @Override
+    public String visitAssignment(PascalParser.AssignmentContext ctx) {
+        if (scopeCodegen.getParent() == null) {
+            if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.INT) {
+                return visit(ctx.expression()) + "\n" +
+                        "putstatic " + programName + "/" + ctx.IDENTIFIER().getText() + " I";
+            } else if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.DOUBLE) {
+                return visit(ctx.expression()) + "\n" +
+                        "putstatic " + programName + "/" + ctx.IDENTIFIER().getText() + " D";
+            } else if(scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.BOOLEAN) {
+                return visit(ctx.expression()) + "\n" +
+                        "putstatic " + programName + "/" + ctx.IDENTIFIER().getText() + " B";
+            } else return visit(ctx.expression()) + "\n" +
+                    "putstatic " + programName + "/" + ctx.IDENTIFIER().getText() + " Ljava/lang/String;";
+        } else {
+            if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.INT) {
+                return visit(ctx.expression()) + "\n" +
+                        "istore " + scopeCodegen.getIndex(ctx.IDENTIFIER().getText());
+            } else if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.DOUBLE) {
+                return visit(ctx.expression()) + "\n" +
+                        "dstore " + scopeCodegen.getIndex(ctx.IDENTIFIER().getText());
+            } else if(scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.BOOLEAN) {
+                return visit(ctx.expression()) + "\n" +
+                        "istore " + scopeCodegen.getIndex(ctx.IDENTIFIER().getText());
+            } else return visit(ctx.expression()) + "\n" +
+                    "astore " + scopeCodegen.getIndex(ctx.IDENTIFIER().getText());
+        }
+    }
+
+//    @Override
+//    public String visitLiteral(PascalParser.LiteralContext ctx) {
+//        if (ctx.IDENTIFIER() != null) {
+//            String identifier = ctx.IDENTIFIER().getText();
+//            TypeCodegen litType = scopeCodegen.get(identifier);
+//            if (litType.isLocal()) {
+//                return "iload" + litType.getIndex();
+//            } else return "getstatic " + programName + "/" + identifier + "/" + litType.getType();
+//        } else if (ctx.INTCONST() != null) {
+//            return "bipush " + ctx.INTCONST().getText();
+//        } else if (ctx.DOUBLECONST() != null) {
+//            return "ldc2_w " + ctx.DOUBLECONST().getText();
+//        } else if (ctx.STRINGCONST() != null) {
+//            return "ldc " + ctx.STRINGCONST().getText();
+//        } else if (ctx.TRUE() != null) {
+//            return "bipush 1";
+//        } else return "bipush 0";
+//    }
+//
+//    @Override
+//    public String visitBoolExpression(PascalParser.BoolExpressionContext ctx) {
+//
+//    }
+
+    @Override
     public String visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
         String component1 = visit(ctx.expression(1));
@@ -173,4 +226,13 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             return component0 + "\n" + component1 + "\n" + "iand";
         }
     }
+
+//    @Override String visitIf_statement(PascalParser.If_statementContext ctx) {
+//        String labelElse = visit(ctx.ELSE_SYMBOL());
+//        String labelEnd = ...
+//        String ifComponent0 = visit(ctx.expression());
+//        if (visit(ctx.ELSE_SYMBOL() != null)) {
+//            return
+//        }
+//    }
 }
