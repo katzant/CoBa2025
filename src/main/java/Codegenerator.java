@@ -3,6 +3,7 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     private ScopeCodegen scopeCodegen;
     private String programName;
     private Type firstExpressionType;
+    private int labelCount;
 
     public Codegenerator(ScopeCodegen scopeCodegen) {
         this.scopeCodegen = scopeCodegen;
@@ -268,4 +269,96 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         }
     }
 
+    private String getBoolString(String component0, String component1, String instruction) {
+        String result = component0 + "\n" + component1 + "\n" +
+                instruction + " " + "trueLabel" + "_" + labelCount + "\n" +
+                "bipush 0\n" +
+                "goto " + "endLabel" + "_" + labelCount + "\n" +
+                "trueLabel" + "_" + labelCount + ":\n" +
+                "bipush 1\n" +
+                "endLabel" + "_" + labelCount + ":\n";
+        labelCount++;
+        return result;
+    }
+
+    private String getBoolString(String component0, String component1, String instruction,
+            String secondInstruction) {
+        String result =  component0 + "\n" + component1 + "\n" +
+                instruction + "\n" +
+                secondInstruction + " " + "trueLabel" + "_" + labelCount + "\n" +
+                "bipush 0\n" +
+                "goto " + "endLabel" + "_" + labelCount + "\n" +
+                "trueLabel" + "_" + labelCount + ":\n" +
+                "bipush 1\n" +
+                "endLabel" + "_" + labelCount + ":\n";
+        labelCount++;
+        return result;
+    }
+
+    @Override
+    public String visitBoolExpression(PascalParser.BoolExpressionContext ctx) {
+        String component0 = visit(ctx.expression(0));
+        Type type0 = firstExpressionType;
+        String component1 = visit(ctx.expression(1));
+        Type type1 = firstExpressionType;
+
+        if (ctx.EQUALS() != null) {
+            if (type0 == Type.STRING) {
+                return getBoolString(component0, component1, "if_acmpeq");
+            }else if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpg", "ifeq");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpg", "ifeq");
+                } else return getBoolString(component0, component1, "dcmpg", "ifeq");
+            } else return getBoolString(component0, component1, "if_icmpeq");
+        }
+        else if (ctx.UNEQUAL() != null) {
+            if (type0 == Type.STRING) {
+                return getBoolString(component0, component1, "if_acmpne");
+            } else if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpg", "ifne");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpg", "ifne");
+                } else return getBoolString(component0, component1, "dcmpg", "ifne");
+            } else return getBoolString(component0, component1, "if_icmpne");
+        }
+        else if (ctx.GREATER_EQUALS() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpg", "ifge");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpg", "ifge");
+                } else return getBoolString(component0, component1, "dcmpg", "ifge");
+            } else return getBoolString(component0, component1, "if_icmpge");
+        }
+        else if (ctx.LESS_EQUAL() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpl", "ifle");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpl", "ifle");
+                } else return getBoolString(component0, component1, "dcmpl", "ifge");
+            } else return getBoolString(component0, component1, "if_icmple");
+        }
+        else if (ctx.GREATHER_THAN() != null) {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpg", "ifgt");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpg", "ifgt");
+                } else return getBoolString(component0, component1, "dcmpg", "ifge");
+            } else return getBoolString(component0, component1, "if_icmpgt");
+        }
+        else {
+            if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
+                if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
+                    return getBoolString(component0, component1 + "\n i2d\n", "dcmpg", "iflt");
+                } else if (type0 != Type.DOUBLE) {
+                    return getBoolString(component0 + "\n i2d\n", component1, "dcmpg", "iflt");
+                } else return getBoolString(component0, component1, "dcmpg", "ifge");
+            } else return getBoolString(component0, component1, "if_icmplt");
+        }
+    }
 }
