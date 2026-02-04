@@ -211,10 +211,10 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     @Override
     public String visitMultExpression(PascalParser.MultExpressionContext ctx) {
         String component0 = visit(ctx.expression(0));
-        Type type0 = this.firstExpressionType;
+        Type type0 = firstExpressionType;
 
         String component1 = visit(ctx.expression(1));
-        Type type1 = this.firstExpressionType;
+        Type type1 = firstExpressionType;
         if (ctx.MULT() != null) {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
