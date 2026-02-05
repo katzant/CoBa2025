@@ -361,4 +361,17 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             } else return getBoolString(component0, component1, "if_icmplt");
         }
     }
+
+    @Override
+    public String visitUnaryExpression(PascalParser.UnaryExpressionContext ctx) {
+        String expression = visit(ctx.expression());
+        Type type = firstExpressionType;
+        if (ctx.NOT() != null) {
+            return expression + "\n" + "bipush 1" + "\n" + "ixor";
+        } else if (ctx.MINUS() != null) {
+            if (type == Type.DOUBLE) {
+                return expression + "\n" + "dneg";
+            } else return expression + "\n" + "ineg";
+        } else return expression;
+    }
 }
