@@ -397,4 +397,9 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             return "bipush 1";
         } else return "bipush 0";
     }
+
+    @Override
+    public String visitParenExpression(PascalParser.ParenExpressionContext ctx) {
+        return visit(ctx.expression());
+    }
 }
