@@ -374,4 +374,27 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             } else return expression + "\n" + "ineg";
         } else return expression;
     }
+
+    @Override
+    public String visitLiteral(PascalParser.LiteralContext ctx) {
+        if (ctx.IDENTIFIER() != null) {
+            String identifier = ctx.IDENTIFIER().getText();
+            TypeCodegen litType = scopeCodegen.get(identifier);
+            if (litType.isLocal()) {
+                if (litType.getType() == Type.DOUBLE) {
+                    return "dload " + litType.getIndex();
+                } else if (litType.getType() == Type.INT || litType.getType() == Type.BOOLEAN) {
+                    return "iload " + litType.getIndex();
+                } else return "aload" + litType.getIndex();
+            } else return "getstatic " + programName + "/" + identifier + " " + litType.getType();
+        } else if (ctx.INTCONST() != null) {
+            return "ldc " + ctx.INTCONST().getText();
+        } else if (ctx.DOUBLECONST() != null) {
+            return "ldc2_w " + ctx.DOUBLECONST().getText();
+        } else if (ctx.STRINGCONST() != null) {
+            return "ldc " + ctx.STRINGCONST().getText();
+        } else if (ctx.TRUE() != null) {
+            return "bipush 1";
+        } else return "bipush 0";
+    }
 }
