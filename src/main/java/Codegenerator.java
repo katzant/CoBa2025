@@ -452,4 +452,23 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         } else result.append("I");
         return result.toString();
     }
+
+    @Override
+    public String visitIf_statement(PascalParser.If_statementContext ctx) {
+        int internalLabel = labelCount++;
+        if (ctx.statement().size() == 1) {
+            return visit(ctx.expression()) + "\n" +
+                    "ifeq endLabel_" + internalLabel + "\n" +
+                    visit(ctx.statement(0)) + "\n" +
+                    "endLabel_" + internalLabel + ":\n";
+        } else {
+            return visit(ctx.expression()) + "\n" +
+                    "ifeq elseLabel_" + internalLabel + "\n" +
+                    visit(ctx.statement(0)) + "\n" +
+                    "goto endLabel_" + internalLabel + "\n" +
+                    "elseLabel_" + internalLabel + ":\n" +
+                    visit(ctx.statement(1)) + "\n" +
+                    "endLabel_" + internalLabel + ":\n";
+        }
+    }
 }
