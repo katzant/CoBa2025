@@ -77,15 +77,19 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         if (returnType.equals("integer")) {
             returnType = "I";
             returnStatement = "ireturn";
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.INT);
         } else if (returnType.equals("boolean")) {
             returnType = "B";
             returnStatement = "ireturn";
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.BOOLEAN);
         } else if (returnType.equals("string")) {
             returnType = "Ljava/lang/String;";
             returnStatement = "areturn";
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.STRING);
         } else {
             returnType = "D";
             returnStatement = "dreturn";
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.DOUBLE);
         }
 
         String varArea;
@@ -422,5 +426,30 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         } else return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                     expression + "\n" +
                     "invokevirtual java/io/PrintStream/println(I)V";
+    }
+
+    @Override
+    public String visitFuncExpression(PascalParser.FuncExpressionContext ctx) {
+        StringBuilder result = new StringBuilder();
+        StringBuilder parameter = new StringBuilder();
+
+        Type type;
+        for (PascalParser.ExpressionContext expression : ctx.function_call().expression()) {
+            result.append(visit(expression));
+            type = firstExpressionType;
+            if (type == Type.STRING) {
+                parameter.append("Ljava/lang/String;");
+            } else if (type == Type.DOUBLE) {
+                parameter.append("D");
+            } else parameter.append("I");
+        }
+        result.append("invokestatic " + programName + "/" + ctx.function_call().IDENTIFIER().getText());
+        result.append("(" + parameter.toString() + ")");
+        if (scopeCodegen.get(ctx.function_call().IDENTIFIER().getText()).getType() == Type.STRING) {
+            result.append("Ljava/lang/String;");
+        } else if (scopeCodegen.get(ctx.function_call().IDENTIFIER().getText()).getType() == Type.DOUBLE) {
+            result.append("D");
+        } else result.append("I");
+        return result.toString();
     }
 }
