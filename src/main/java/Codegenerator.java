@@ -402,4 +402,25 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     public String visitParenExpression(PascalParser.ParenExpressionContext ctx) {
         return visit(ctx.expression());
     }
+
+    @Override
+    public String visitWriteln(PascalParser.WritelnContext ctx) {
+        String expression = visit(ctx.expression());
+        Type type = firstExpressionType;
+        if (type == Type.STRING) {
+            return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
+                    expression + "\n" +
+                    "invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V";
+        } else if (type == Type.DOUBLE) {
+            return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
+                    expression + "\n" +
+                    "invokevirtual java/io/PrintStream/println(D)V";
+        } else if (type == Type.BOOLEAN) {
+            return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
+                    expression + "\n" +
+                    "invokevirtual java/io/PrintStream/println(Z)V";
+        } else return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
+                    expression + "\n" +
+                    "invokevirtual java/io/PrintStream/println(I)V";
+    }
 }
