@@ -192,23 +192,23 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         if (ctx.PLUS() != null) {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 firstExpressionType = Type.DOUBLE;
-                return component0 + "\n" + component1 + "\n" + "dadd";
+                return component0 + "\n" + component1 + "\n" + "dadd\n";
             } else {
                 firstExpressionType = Type.INT;
-                return component0 + "\n" + component1 + "\n" + "iadd";
+                return component0 + "\n" + component1 + "\n" + "iadd\n";
             }
 
         } else if (ctx.MINUS() != null) {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 firstExpressionType = Type.DOUBLE;
-                return component0 + "\n" + component1 + "\n" + "dsub";
+                return component0 + "\n" + component1 + "\n" + "dsub\n";
             } else {
                 firstExpressionType = Type.INT;
-                return component0 + "\n" + component1 + "\n" + "isub";
+                return component0 + "\n" + component1 + "\n" + "isub\n";
             }
         } else {
             firstExpressionType = Type.BOOLEAN;
-            return component0 + "\n" + component1 + "\n" + "ior";
+            return component0 + "\n" + component1 + "\n" + "ior\n";
         }
     }
 
@@ -223,53 +223,53 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "dmul";
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "dmul\n";
                 } else if (type0 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "dmul";
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "dmul\n";
                 } else {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "dmul";
+                    return component0 + "\n" + component1 + "\n" + "dmul\n";
                 }
             } else {
                 firstExpressionType = Type.INT;
-                return component0 + "\n" + component1 + "\n" + "imul";
+                return component0 + "\n" + component1 + "\n" + "imul\n";
             }
         } else if (ctx.DIV() != null) {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "ddiv";
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "ddiv\n";
                 } else if (type0 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "ddiv";
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "ddiv\n";
                 } else {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "ddiv";
+                    return component0 + "\n" + component1 + "\n" + "ddiv\n";
                 }
             } else {
                 firstExpressionType = Type.INT;
-                return component0 + "\n" + component1 + "\n" + "idiv";
+                return component0 + "\n" + component1 + "\n" + "idiv\n";
             }
         } else if (ctx.MOD() != null) {
             if (type0 == Type.DOUBLE || type1 == Type.DOUBLE) {
                 if (type0 == Type.DOUBLE && type1 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "drem";
+                    return component0 + "\n" + component1 + "\n" + "i2d\n" + "drem\n";
                 } else if (type0 != Type.DOUBLE) {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "drem";
+                    return component0 +"\n" + "i2d\n" + component1 + "\n" + "drem\n";
                 } else {
                     firstExpressionType = Type.DOUBLE;
-                    return component0 + "\n" + component1 + "\n" + "drem";
+                    return component0 + "\n" + component1 + "\n" + "drem\n";
                 }
             } else {
                 firstExpressionType = Type.INT;
-                return component0 + "\n" + component1 + "\n" + "irem";
+                return component0 + "\n" + component1 + "\n" + "irem\n";
             }
         } else {
             firstExpressionType = Type.BOOLEAN;
-            return component0 + "\n" + component1 + "\n" + "iand";
+            return component0 + "\n" + component1 + "\n" + "iand\n";
         }
     }
 
@@ -392,11 +392,11 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                 } else return "aload" + litType.getIndex();
             } else return "getstatic " + programName + "/" + identifier + " " + litType.getType();
         } else if (ctx.INTCONST() != null) {
-            return "ldc " + ctx.INTCONST().getText();
+            return "ldc " + ctx.INTCONST().getText() + "\n";
         } else if (ctx.DOUBLECONST() != null) {
-            return "ldc2_w " + ctx.DOUBLECONST().getText();
+            return "ldc2_w " + ctx.DOUBLECONST().getText() + "\n";
         } else if (ctx.STRINGCONST() != null) {
-            return "ldc " + ctx.STRINGCONST().getText();
+            return "ldc " + ctx.STRINGCONST().getText() + "\n";
         } else if (ctx.TRUE() != null) {
             return "bipush 1";
         } else return "bipush 0";
@@ -414,18 +414,18 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         if (type == Type.STRING) {
             return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                     expression + "\n" +
-                    "invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V";
+                    "invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n";
         } else if (type == Type.DOUBLE) {
             return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                     expression + "\n" +
-                    "invokevirtual java/io/PrintStream/println(D)V";
+                    "invokevirtual java/io/PrintStream/println(D)V\n";
         } else if (type == Type.BOOLEAN) {
             return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                     expression + "\n" +
-                    "invokevirtual java/io/PrintStream/println(Z)V";
+                    "invokevirtual java/io/PrintStream/println(Z)V\n";
         } else return "getstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                     expression + "\n" +
-                    "invokevirtual java/io/PrintStream/println(I)V";
+                    "invokevirtual java/io/PrintStream/println(I)V\n";
     }
 
     @Override
