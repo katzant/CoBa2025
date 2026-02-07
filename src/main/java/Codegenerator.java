@@ -552,7 +552,11 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
 
     @Override
     public String visitProcedure(PascalParser.ProcedureContext ctx) {
-        String functionName = ctx.procedure_head().IDENTIFIER().getText();
+        String procedureName = ctx.procedure_head().IDENTIFIER().getText();
+        scopeCodegen.addVariable(procedureName, Type.VOID);
+
+        ScopeCodegen global = scopeCodegen;
+        scopeCodegen = new ScopeCodegen(global);
 
         StringBuilder parameters = new StringBuilder();
         if (ctx.procedure_head().parameter() != null) {
@@ -568,7 +572,7 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                         parameters.append("Ljava/lang/String;");
                         scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.STRING);
                     } else {
-                        parameters.append("B");
+                        parameters.append("I");
                         scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.BOOLEAN);
                     }
                 }
@@ -580,12 +584,17 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             varArea = "";
         } else varArea = visit(ctx.var_area());
 
-        return ".method public static " + functionName + " (" + parameters +")V" +"\n" +
+        String statements = visit(ctx.statements());
+
+        String code =  ".method public static " + procedureName + "(" + parameters +")V" +"\n" +
                 ".limit stack 50\n" +
                 ".limit locals 50\n" +
                 varArea + "\n" +
-                visit(ctx.statements()) + "\n" +
+                statements + "\n" +
                 "return\n" +
                 ".end method\n";
+
+        scopeCodegen = global;
+        return code;
     }
 }
