@@ -389,11 +389,19 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             TypeCodegen litType = scopeCodegen.get(identifier);
             if (litType.isLocal()) {
                 if (litType.getType() == Type.DOUBLE) {
-                    return "dload " + litType.getIndex();
+                    return "dload " + litType.getIndex() + "\n";
                 } else if (litType.getType() == Type.INT || litType.getType() == Type.BOOLEAN) {
-                    return "iload " + litType.getIndex();
-                } else return "aload" + litType.getIndex();
-            } else return "getstatic " + programName + "/" + identifier + " " + litType.getType();
+                    return "iload " + litType.getIndex() + "\n";
+                } else return "aload " + litType.getIndex() + "\n";
+            } else {
+                if (litType.getType() == Type.INT) {
+                    return "getstatic " + programName + "/" + identifier + " I\n";
+                } else if (litType.getType() == Type.DOUBLE) {
+                    return "getstatic " + programName + "/" + identifier + " D\n";
+                } else if (litType.getType() == Type.BOOLEAN) {
+                    return "getstatic " + programName + "/" + identifier + " B\n";
+                } else return "getstatic " + programName + "/" + identifier + " Ljava/lang/String;\n";
+            }
         } else if (ctx.INTCONST() != null) {
             return "ldc " + ctx.INTCONST().getText() + "\n";
         } else if (ctx.DOUBLECONST() != null) {
@@ -401,8 +409,8 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         } else if (ctx.STRINGCONST() != null) {
             return "ldc " + ctx.STRINGCONST().getText() + "\n";
         } else if (ctx.TRUE() != null) {
-            return "bipush 1";
-        } else return "bipush 0";
+            return "bipush 1\n";
+        } else return "bipush 0\n";
     }
 
     @Override
