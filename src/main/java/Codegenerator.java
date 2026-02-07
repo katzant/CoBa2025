@@ -515,4 +515,43 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     public String visitBegin_end_block(PascalParser.Begin_end_blockContext ctx) {
         return visit(ctx.statements(0));
     }
+
+    @Override
+    public String visitProcedure(PascalParser.ProcedureContext ctx) {
+        String functionName = ctx.procedure_head().IDENTIFIER().getText();
+
+        StringBuilder parameters = new StringBuilder();
+        if (ctx.procedure_head().parameter() != null) {
+            for (PascalParser.Param_tupleContext tuple : ctx.procedure_head().parameter().param_tuple()) {
+                for (int i = 0; i < tuple.IDENTIFIER().size(); i++) {
+                    if (tuple.data_type().getText().equals("integer")) {
+                        parameters.append("I");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.INT);
+                    } else if (tuple.data_type().getText().equals("double")) {
+                        parameters.append("D");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.DOUBLE);
+                    } else if (tuple.data_type().getText().equals("string")) {
+                        parameters.append("Ljava/lang/String;");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.STRING);
+                    } else {
+                        parameters.append("B");
+                        scopeCodegen.addVariable(tuple.IDENTIFIER(i).getText(), Type.BOOLEAN);
+                    }
+                }
+            }
+        }
+
+        String varArea;
+        if (ctx.var_area() == null) {
+            varArea = "";
+        } else varArea = visit(ctx.var_area());
+
+        return ".method public static " + functionName + " (" + parameters +")V" +"\n" +
+                ".limit stack 50\n" +
+                ".limit locals 50\n" +
+                varArea + "\n" +
+                visit(ctx.statements()) + "\n" +
+                "return\n" +
+                ".end method\n";
+    }
 }
