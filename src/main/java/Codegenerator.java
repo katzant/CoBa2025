@@ -72,24 +72,24 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             }
         }
 
-        String returnType = visit(ctx.function_head().data_type());
+        String returnType = ctx.function_head().data_type().getText();
         String returnStatement;
         if (returnType.equals("integer")) {
             returnType = "I";
             returnStatement = "ireturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.INT);
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.INT);
         } else if (returnType.equals("boolean")) {
             returnType = "B";
             returnStatement = "ireturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.BOOLEAN);
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.BOOLEAN);
         } else if (returnType.equals("string")) {
             returnType = "Ljava/lang/String;";
             returnStatement = "areturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.STRING);
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.STRING);
         } else {
             returnType = "D";
             returnStatement = "dreturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().toString(), Type.DOUBLE);
+            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.DOUBLE);
         }
 
         String varArea;
