@@ -54,6 +54,35 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     public String visitFunction(PascalParser.FunctionContext ctx) {
         String functionName = ctx.function_head().IDENTIFIER().getText();
 
+        String returnType = ctx.function_head().data_type().getText();
+        Type type;
+
+        String returnStatement;
+        if (returnType.equals("integer")) {
+            returnType = "I";
+            returnStatement = "ireturn";
+            scopeCodegen.addVariable(functionName, Type.INT);
+            type = Type.INT;
+        } else if (returnType.equals("boolean")) {
+            returnType = "B";
+            returnStatement = "ireturn";
+            scopeCodegen.addVariable(functionName, Type.BOOLEAN);
+            type = Type.BOOLEAN;
+        } else if (returnType.equals("string")) {
+            returnType = "Ljava/lang/String;";
+            returnStatement = "areturn";
+            scopeCodegen.addVariable(functionName, Type.STRING);
+            type = Type.STRING;
+        } else {
+            returnType = "D";
+            returnStatement = "dreturn";
+            scopeCodegen.addVariable(functionName, Type.DOUBLE);
+            type = Type.DOUBLE;
+        }
+
+        ScopeCodegen global = scopeCodegen;
+        scopeCodegen = new ScopeCodegen(global);
+
         StringBuilder parameters = new StringBuilder();
         if (ctx.function_head().parameter() != null) {
             for (PascalParser.Param_tupleContext tuple : ctx.function_head().parameter().param_tuple()) {
@@ -75,38 +104,33 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
             }
         }
 
-        String returnType = ctx.function_head().data_type().getText();
-        String returnStatement;
-        if (returnType.equals("integer")) {
-            returnType = "I";
-            returnStatement = "ireturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.INT);
-        } else if (returnType.equals("boolean")) {
-            returnType = "B";
-            returnStatement = "ireturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.BOOLEAN);
-        } else if (returnType.equals("string")) {
-            returnType = "Ljava/lang/String;";
-            returnStatement = "areturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.STRING);
-        } else {
-            returnType = "D";
-            returnStatement = "dreturn";
-            scopeCodegen.addVariable(ctx.function_head().IDENTIFIER().getText(), Type.DOUBLE);
-        }
+        scopeCodegen.addVariable(functionName, type);
 
         String varArea;
         if (ctx.var_area() == null) {
             varArea = "";
         } else varArea = visit(ctx.var_area());
 
-        return ".method public static " + functionName + " (" + parameters +")" + returnType +"\n" +
+        String statements = visit(ctx.statements());
+
+        String result;
+        if (returnType.equals("D")) {
+            result = "dload " + scopeCodegen.getIndex(functionName);
+        } else if (returnType.equals("Ljava/lang/String;")) {
+            result = "aload " + scopeCodegen.getIndex(functionName);
+        } else result = "iload " + scopeCodegen.getIndex(functionName);
+
+        String returnCode =  ".method public static " + functionName + "(" + parameters +")" + returnType +"\n" +
                 ".limit stack 50\n" +
                 ".limit locals 50\n" +
                 varArea + "\n" +
-                visit(ctx.statements()) + "\n" +
+                statements + "\n" +
+                result + "\n" +
                 returnStatement + "\n" +
                 ".end method\n";
+
+        scopeCodegen = global;
+        return returnCode;
     }
 
     @Override
