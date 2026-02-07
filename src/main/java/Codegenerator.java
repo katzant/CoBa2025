@@ -411,6 +411,8 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
         if (ctx.IDENTIFIER() != null) {
             String identifier = ctx.IDENTIFIER().getText();
             TypeCodegen litType = scopeCodegen.get(identifier);
+            firstExpressionType = litType.getType();
+
             if (litType.isLocal()) {
                 if (litType.getType() == Type.DOUBLE) {
                     return "dload " + litType.getIndex() + "\n";
@@ -427,14 +429,21 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                 } else return "getstatic " + programName + "/" + identifier + " Ljava/lang/String;\n";
             }
         } else if (ctx.INTCONST() != null) {
+            firstExpressionType = Type.INT;
             return "ldc " + ctx.INTCONST().getText() + "\n";
         } else if (ctx.DOUBLECONST() != null) {
+            firstExpressionType = Type.DOUBLE;
             return "ldc2_w " + ctx.DOUBLECONST().getText() + "\n";
         } else if (ctx.STRINGCONST() != null) {
-            return "ldc " + ctx.STRINGCONST().getText() + "\n";
+            firstExpressionType = Type.STRING;
+            return "ldc " + ctx.STRINGCONST().getText().replace("'", "\"") + "\n";
         } else if (ctx.TRUE() != null) {
+            firstExpressionType = Type.BOOLEAN;
             return "bipush 1\n";
-        } else return "bipush 0\n";
+        } else {
+            firstExpressionType = Type.BOOLEAN;
+            return "bipush 0\n";
+        }
     }
 
     @Override
