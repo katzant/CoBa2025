@@ -510,4 +510,9 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
 
         return result.toString();
     }
+
+    @Override
+    public String visitBegin_end_block(PascalParser.Begin_end_blockContext ctx) {
+        return visit(ctx.statements(0));
+    }
 }
