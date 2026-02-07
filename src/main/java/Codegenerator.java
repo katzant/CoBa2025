@@ -11,6 +11,9 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
 
     @Override
     public String visitStart(PascalParser.StartContext ctx) {
+
+        programName = ctx.program().IDENTIFIER().getText();
+
         StringBuilder functionsProcedures = new StringBuilder();
         for (PascalParser.FunctionContext function : ctx.function()) {
             functionsProcedures.append(visit(function));
@@ -502,7 +505,6 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
 
         for (PascalParser.StatementContext statement : ctx.statement()) {
             String code = visit(statement);
-            result.append(code);
             if (code != null) {
                 result.append(code + "\n");
             }
