@@ -463,14 +463,19 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                     "invokevirtual java/io/PrintStream/println(I)V\n";
     }
 
+     @Override
+     public String visitFuncExpression(PascalParser.FuncExpressionContext ctx) {
+        return visit(ctx.function_call());
+     }
+
     @Override
-    public String visitFuncExpression(PascalParser.FuncExpressionContext ctx) {
+    public String visitFunction_call(PascalParser.Function_callContext ctx) {
         StringBuilder result = new StringBuilder();
         StringBuilder parameter = new StringBuilder();
 
         Type type;
-        for (PascalParser.ExpressionContext expression : ctx.function_call().expression()) {
-            result.append(visit(expression));
+        for (PascalParser.ExpressionContext expression : ctx.expression()) {
+            result.append(visit(expression) + "\n");
             type = firstExpressionType;
             if (type == Type.STRING) {
                 parameter.append("Ljava/lang/String;");
@@ -478,13 +483,19 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                 parameter.append("D");
             } else parameter.append("I");
         }
-        result.append("invokestatic " + programName + "/" + ctx.function_call().IDENTIFIER().getText());
+
+        result.append("invokestatic " + programName + "/" + ctx.IDENTIFIER().getText());
         result.append("(" + parameter.toString() + ")");
-        if (scopeCodegen.get(ctx.function_call().IDENTIFIER().getText()).getType() == Type.STRING) {
+
+        if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.STRING) {
             result.append("Ljava/lang/String;");
-        } else if (scopeCodegen.get(ctx.function_call().IDENTIFIER().getText()).getType() == Type.DOUBLE) {
+        } else if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.DOUBLE) {
             result.append("D");
+        } else if (scopeCodegen.get(ctx.IDENTIFIER().getText()).getType() == Type.VOID) {
+            result.append("V");
         } else result.append("I");
+
+        result.append("\n");
         return result.toString();
     }
 
