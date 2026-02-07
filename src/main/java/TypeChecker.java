@@ -183,6 +183,11 @@ public class TypeChecker extends PascalParserBaseVisitor<Type> {
     }
 
     @Override
+    public Type visitParenExpression(PascalParser.ParenExpressionContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override
     public Type visitAssignment(PascalParser.AssignmentContext ctx) {
         Type var = visit(ctx.expression());
         Type assignedType = scope.get(ctx.IDENTIFIER().getText());
