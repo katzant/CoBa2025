@@ -495,4 +495,19 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
     public String visitStatement(PascalParser.StatementContext ctx) {
         return visitChildren(ctx);
     }
+
+    @Override
+    public String visitStatements(PascalParser.StatementsContext ctx) {
+        StringBuilder result = new StringBuilder();
+
+        for (PascalParser.StatementContext statement : ctx.statement()) {
+            String code = visit(statement);
+            result.append(code);
+            if (code != null) {
+                result.append(code + "\n");
+            }
+        }
+
+        return result.toString();
+    }
 }
