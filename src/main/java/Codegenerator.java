@@ -471,4 +471,23 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                     "endLabel_" + internalLabel + ":\n";
         }
     }
+
+    @Override
+    public String visitWhile_statement(PascalParser.While_statementContext ctx) {
+        int internalLabel = labelCount++;
+        String content = "";
+
+        if (ctx.statement() != null) {
+            content = visit(ctx.statement());
+        } else if (ctx.begin_end_block() != null) {
+            content = visit(ctx.begin_end_block());
+        }
+
+        return "startLabel_" + internalLabel + ":\n" +
+                visit(ctx.expression()) + "\n" +
+                "ifeq " + "endLabel_" + internalLabel + "\n" +
+                content + "\n" +
+                "goto " + "startLabel_" + internalLabel + "\n" +
+                "endLabel_" + internalLabel + ":\n";
+    }
 }
