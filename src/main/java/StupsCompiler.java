@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class StupsCompiler {
     public static void main(String[] args) throws IOException {
@@ -40,6 +41,15 @@ public class StupsCompiler {
             Scope scope = new Scope(null);
             TypeChecker typeChecker = new  TypeChecker(scope);
             typeChecker.visit(tree);
+
+            String jasminFilename = filename.substring(0, filename.length() - 3);
+            jasminFilename = jasminFilename + "j";
+            ScopeCodegen scopeCodegen = new ScopeCodegen(null);
+            Codegenerator codegenerator = new Codegenerator(scopeCodegen);
+            PrintWriter printWriter = new PrintWriter(jasminFilename);
+            printWriter.println(codegenerator.visit(tree));
+            printWriter.close();
+
         }
     }
 }
