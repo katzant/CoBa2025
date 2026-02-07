@@ -490,4 +490,9 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
                 "goto " + "startLabel_" + internalLabel + "\n" +
                 "endLabel_" + internalLabel + ":\n";
     }
+
+    @Override
+    public String visitStatement(PascalParser.StatementContext ctx) {
+        return visitChildren(ctx);
+    }
 }
