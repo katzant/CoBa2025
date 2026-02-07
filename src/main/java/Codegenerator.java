@@ -513,7 +513,7 @@ public class Codegenerator extends PascalParserBaseVisitor<String> {
 
     @Override
     public String visitBegin_end_block(PascalParser.Begin_end_blockContext ctx) {
-        return visit(ctx.statements(0));
+        return visit(ctx.statements());
     }
 
     @Override
