@@ -1,4 +1,3 @@
-
 public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
 
     @Override
@@ -7,4 +6,14 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
         graphNode.addDef(ctx.IDENTIFIER().getText());
         return graphNode;
     }
+
+    @Override
+    public GraphNode visitAdditExpression(PascalParser.AdditExpressionContext ctx) {
+        GraphNode node0 = visit(ctx.expression(0));
+        GraphNode node1 = visit(ctx.expression(1));
+
+        node0.getUse().addAll(node1.getUse());
+        return node0;
+    }
+
 }
