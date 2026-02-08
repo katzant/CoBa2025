@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.Set;
 
 public class StupsCompiler {
     public static void main(String[] args) throws IOException {
@@ -49,7 +51,25 @@ public class StupsCompiler {
             PrintWriter printWriter = new PrintWriter(jasminFilename);
             printWriter.println(codegenerator.visit(tree));
             printWriter.close();
+        }
+        else if (args[0].equals("-liveness")) {
+            CharStream input = CharStreams.fromFileName(args[1]);
+            PascalLexer lexer = new PascalLexer(input);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            PascalParser parser = new PascalParser(tokens);
 
+            parser.removeErrorListeners();
+            ParseErrorListener parseErrorListener = new ParseErrorListener();
+            parser.addErrorListener(parseErrorListener);
+
+            ParseTree tree = parser.start();
+
+            if (parseErrorListener.hasError()) {
+                return;
+            }
+
+            LivenessAnalysisVisitor livenessAnalysisVisitor = new LivenessAnalysisVisitor();
+            System.out.println("Registers: ");
         }
     }
 }
