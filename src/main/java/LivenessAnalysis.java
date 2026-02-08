@@ -42,7 +42,7 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
     public GraphNode visitLiteralExpression(PascalParser.LiteralExpressionContext ctx) {
         GraphNode node = new GraphNode();
         if (ctx.literal().IDENTIFIER() != null) {
-            node.getUse().add(ctx.literal().IDENTIFIER().getText());
+            node.addUse(ctx.literal().IDENTIFIER().getText());
         }
         return node;
     }
@@ -64,6 +64,12 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
 
     @Override
     public GraphNode visitFunction_call(PascalParser.Function_callContext ctx) {
+        GraphNode graphNode = new GraphNode();
+
+        for (PascalParser.ExpressionContext expression : ctx.expression()) {
+            GraphNode expressionNode = visit(expression);
+            graphNode.getUse().addAll(expressionNode.getUse());
+        }
         return new GraphNode();
     }
 
