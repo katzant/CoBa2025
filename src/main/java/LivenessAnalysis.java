@@ -62,4 +62,18 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
     public GraphNode visitFunction_call(PascalParser.Function_callContext ctx) {
         return new GraphNode();
     }
+
+    @Override
+    public GraphNode visitIf_statement(PascalParser.If_statementContext ctx) {
+        GraphNode expressionNode = visit(ctx.expression());
+        GraphNode thenNode = visit(ctx.statement(0));
+
+        if (ctx.statement().size() != 1) {
+            GraphNode elseNode = visit(ctx.statement(1));
+            expressionNode.addNext(elseNode);
+        }
+
+        expressionNode.addNext(thenNode);
+        return expressionNode;
+    }
 }
