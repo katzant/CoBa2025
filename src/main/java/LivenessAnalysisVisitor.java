@@ -1,8 +1,6 @@
-import org.antlr.v4.misc.Graph;
-
 import java.util.*;
 
-public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
+public class LivenessAnalysisVisitor extends PascalParserBaseVisitor<GraphNode> {
 
     @Override
     public GraphNode visitAssignment(PascalParser.AssignmentContext ctx) {
