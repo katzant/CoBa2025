@@ -40,7 +40,6 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
         if (ctx.literal().IDENTIFIER() != null) {
             node.getUse().add(ctx.literal().IDENTIFIER().getText());
         }
-
         return node;
     }
 }
