@@ -82,6 +82,49 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
     }
 
     @Override
+    public GraphNode visitWhile_statement(PascalParser.While_statementContext ctx) {
+        GraphNode expressionNode = visit(ctx.expression());
+
+        GraphNode loopNode = null;
+
+        if (ctx.statement() !=  null) {
+            loopNode = visit(ctx.statement());
+        } else {
+            loopNode = visit(ctx.begin_end_block());
+        }
+
+        expressionNode.addNext(loopNode);
+
+        List<GraphNode> loopEnds = new ArrayList<>();
+
+        Queue<GraphNode> queue = new LinkedList<>();
+        queue.add(loopNode);
+
+        Set<GraphNode> done = new HashSet<>();
+        done.add(loopNode);
+
+        while (!queue.isEmpty()) {
+            GraphNode current = queue.poll();
+            if (current.getNext().isEmpty()) {
+                loopEnds.add(current);
+            }
+            for (GraphNode node : current.getNext()) {
+                if (!done.contains(node)) {
+                    done.add(node);
+                    queue.add(node);
+                }
+            }
+        }
+
+        for (GraphNode end : loopEnds) {
+            end.addNext(expressionNode);
+        }
+
+        expressionNode.addNext(new GraphNode());
+        return expressionNode;
+    }
+
+    @Override
     public GraphNode visitBegin_end_block(PascalParser.Begin_end_blockContext ctx) {
         if (ctx.statements().isEmpty()) {
             return new GraphNode();
