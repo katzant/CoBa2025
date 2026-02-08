@@ -43,4 +43,8 @@ public class GraphNode {
         next.add(graphNode);
     }
 
+    public void addDef(String def) {
+        this.def.add(def);
+    }
+
 }
