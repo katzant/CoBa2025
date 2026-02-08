@@ -1,3 +1,7 @@
+import org.antlr.v4.misc.Graph;
+
+import java.util.*;
+
 public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
 
     @Override
@@ -75,5 +79,50 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
 
         expressionNode.addNext(thenNode);
         return expressionNode;
+    }
+
+    @Override
+    public GraphNode visitBegin_end_block(PascalParser.Begin_end_blockContext ctx) {
+        if (ctx.statements().isEmpty()) {
+            return new GraphNode();
+        }
+
+        List<GraphNode> endsOfBlock = new ArrayList<>();
+
+        GraphNode startOfBlock = null;
+
+        for (int i = 0; i < ctx.statements().statement().size(); i++) {
+            GraphNode next = visit(ctx.statements().statement(i));
+
+            if (startOfBlock == null) {
+                startOfBlock = next;
+            }
+
+            for (GraphNode end : endsOfBlock) {
+                end.addNext(next);
+            }
+
+            endsOfBlock = new ArrayList<>();
+
+            Queue<GraphNode> queue = new LinkedList<>();
+            queue.add(next);
+
+            Set<GraphNode> done = new HashSet<>();
+            done.add(next);
+
+            while (!queue.isEmpty()) {
+                GraphNode current = queue.poll();
+                if (current.getNext().isEmpty()) {
+                    endsOfBlock.add(current);
+                }
+                for (GraphNode node : current.getNext()) {
+                    if (!done.contains(node)) {
+                        done.add(node);
+                        queue.add(node);
+                    }
+                }
+            }
+        }
+        return startOfBlock;
     }
 }
