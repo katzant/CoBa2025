@@ -212,4 +212,10 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
         }
         return startOfProgram;
     }
+
+    @Override
+    public GraphNode visitWriteln(PascalParser.WritelnContext ctx) {
+        visit(ctx.expression());
+        return new GraphNode();
+    }
 }
