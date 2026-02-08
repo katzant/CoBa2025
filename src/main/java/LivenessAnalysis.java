@@ -45,16 +45,12 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
 
     @Override
     public GraphNode visitParenExpression(PascalParser.ParenExpressionContext ctx) {
-        GraphNode node = new GraphNode();
-        node.getUse().add(ctx.expression().getText());
-        return node;
+        return visit(ctx.expression());
     }
 
     @Override
     public GraphNode visitUnaryExpression(PascalParser.UnaryExpressionContext ctx) {
-        GraphNode node = new GraphNode();
-        node.getUse().add(ctx.expression().getText());
-        return node;
+        return visit(ctx.expression());
     }
 
     @Override
