@@ -57,4 +57,13 @@ public class LivenessAnalysis extends PascalParserBaseVisitor<GraphNode> {
         return node;
     }
 
+    @Override
+    public GraphNode visitFuncExpression(PascalParser.FuncExpressionContext ctx) {
+        return visit(ctx.function_call());
+    }
+
+    @Override
+    public GraphNode visitFunction_call(PascalParser.Function_callContext ctx) {
+        return new GraphNode();
+    }
 }
