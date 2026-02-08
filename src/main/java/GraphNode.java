@@ -47,4 +47,8 @@ public class GraphNode {
         this.def.add(def);
     }
 
+    public void addUse(String use){
+        this.use.add(use);
+    }
+
 }
